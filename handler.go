@@ -19,7 +19,7 @@ func WriteHandler(saveFile string, handler func(io.Writer) error, options ...Opt
 		return err
 	}
 
-	file, err := os.OpenFile(saveFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0664)
+	file, err := os.OpenFile(saveFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0664)
 	if err != nil {
 		return err
 	}
@@ -36,10 +36,11 @@ func WriteHandler(saveFile string, handler func(io.Writer) error, options ...Opt
 				if err != nil {
 					return err
 				}
-				defer writer.Close()
 			}
 		}
 	}
+
+	defer writer.Close()
 
 	if err = handler(writer); err != nil {
 		return err
