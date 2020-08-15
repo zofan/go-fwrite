@@ -16,17 +16,17 @@ type StringBuffer struct {
 func (b *StringBuffer) Push(r string) {
 	if len(b.buffer) >= b.BufferSize {
 		b.Save()
-	} else {
-		b.buffer = append(b.buffer, r)
 	}
+
+	b.buffer = append(b.buffer, r)
 }
 
 func (b *StringBuffer) PushSlice(r []string) {
 	if len(b.buffer) >= b.BufferSize {
 		b.Save()
-	} else {
-		b.buffer = append(b.buffer, r...)
 	}
+
+	b.buffer = append(b.buffer, r...)
 }
 
 func (b *StringBuffer) Save() {
