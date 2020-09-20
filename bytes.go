@@ -1,12 +1,13 @@
 package fwrite
 
 import (
+	"github.com/zofan/go-bits"
 	"io"
 )
 
-func WriteBytes(saveFile string, raw []byte, options ...Option) error {
-	return WriteHandler(saveFile, func(writer io.Writer) error {
+func FromBytes(saveFile string, raw []byte, options bits.Bits8) error {
+	return FromHandler(saveFile, func(writer io.Writer) error {
 		_, err := writer.Write(raw)
 		return err
-	}, options...)
+	}, options)
 }

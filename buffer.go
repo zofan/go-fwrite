@@ -1,7 +1,6 @@
 package fwrite
 
 import (
-	"github.com/zofan/go-util"
 	"io"
 	"strings"
 )
@@ -30,13 +29,28 @@ func (b *StringBuffer) PushSlice(r []string) {
 }
 
 func (b *StringBuffer) Save() {
-	b.buffer = util.UniqueStrings(b.buffer)
+	b.buffer = uniqueStrings(b.buffer)
 
-	err := WriteHandler(b.SaveFile, func(writer io.Writer) error {
+	err := FromHandler(b.SaveFile, func(writer io.Writer) error {
 		_, err := writer.Write([]byte(strings.Join(b.buffer, "\n") + "\n"))
 		return err
-	})
+	}, Append)
 	if err == nil {
 		b.buffer = []string{}
 	}
+}
+
+func uniqueStrings(s []string) []string {
+	uniq := map[string]struct{}{}
+
+	for _, v := range s {
+		uniq[v] = struct{}{}
+	}
+
+	var result []string
+	for key := range uniq {
+		result = append(result, key)
+	}
+
+	return result
 }

@@ -1,11 +1,12 @@
 package fwrite
 
 import (
+	"github.com/zofan/go-bits"
 	"io"
 )
 
-func WriteChan(saveFile string, ch chan []byte, options ...Option) error {
-	return WriteHandler(saveFile, func(writer io.Writer) error {
+func FromChan(saveFile string, ch chan []byte, options bits.Bits8) error {
+	return FromHandler(saveFile, func(writer io.Writer) error {
 		for v := range ch {
 			_, err := writer.Write(v)
 			if err != nil {
@@ -14,5 +15,5 @@ func WriteChan(saveFile string, ch chan []byte, options ...Option) error {
 		}
 
 		return nil
-	}, options...)
+	}, options)
 }

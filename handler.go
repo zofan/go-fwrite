@@ -2,6 +2,7 @@ package fwrite
 
 import (
 	"compress/gzip"
+	"github.com/zofan/go-bits"
 	"io"
 	"os"
 	"path/filepath"
@@ -9,17 +10,22 @@ import (
 )
 
 const (
-	UseGzip Option = 1
+	None    bits.Bits8 = 0
+	UseGzip bits.Bits8 = 1
+	Append  bits.Bits8 = 2
 )
 
-type Option uint8
-
-func WriteHandler(saveFile string, handler func(io.Writer) error, options ...Option) error {
+func FromHandler(saveFile string, handler func(io.Writer) error, options bits.Bits8) error {
 	if err := os.MkdirAll(filepath.Dir(saveFile), 0777); err != nil {
 		return err
 	}
 
-	file, err := os.OpenFile(saveFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0664)
+	flag := os.O_WRONLY | os.O_CREATE
+	if options.Has(Append) {
+		flag |= os.O_APPEND
+	}
+
+	file, err := os.OpenFile(saveFile, flag, 0664)
 	if err != nil {
 		return err
 	}
@@ -28,23 +34,16 @@ func WriteHandler(saveFile string, handler func(io.Writer) error, options ...Opt
 	var writer io.WriteCloser
 	writer = file
 
-	for _, option := range options {
-		switch option {
-		case UseGzip:
-			if strings.HasSuffix(saveFile, `.gz`) {
-				writer, err = gzip.NewWriterLevel(file, gzip.BestCompression)
-				if err != nil {
-					return err
-				}
-			}
+	if options.Has(UseGzip) && strings.HasSuffix(saveFile, `.gz`) {
+		writer, err = gzip.NewWriterLevel(file, gzip.BestCompression)
+		if err != nil {
+			return err
 		}
 	}
 
-	defer writer.Close()
-
-	if err = handler(writer); err != nil {
-		return err
+	if writer != file {
+		defer writer.Close()
 	}
 
-	return nil
+	return handler(writer)
 }
