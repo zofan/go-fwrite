@@ -1,19 +1,30 @@
 package fwrite
 
 import (
-	"io"
+	"github.com/zofan/go-bits"
 	"strings"
 )
 
 type StringBuffer struct {
 	buffer []string
 
-	BufferSize int
-	SaveFile   string
+	bufferSize int
+	writer     *Writer
+}
+
+func NewStringBuffer(filePath string, bufferSize int, options bits.Bits8) (*StringBuffer, error) {
+	options.Set(Append)
+
+	w, err := NewWriter(filePath, options)
+	if err != nil {
+		return nil, err
+	}
+
+	return &StringBuffer{writer: w, bufferSize: bufferSize}, nil
 }
 
 func (b *StringBuffer) Push(r string) {
-	if len(b.buffer) >= b.BufferSize {
+	if len(b.buffer) >= b.bufferSize {
 		b.Save()
 	}
 
@@ -21,7 +32,7 @@ func (b *StringBuffer) Push(r string) {
 }
 
 func (b *StringBuffer) PushSlice(r []string) {
-	if len(b.buffer) >= b.BufferSize {
+	if len(b.buffer) >= b.bufferSize {
 		b.Save()
 	}
 
@@ -31,10 +42,7 @@ func (b *StringBuffer) PushSlice(r []string) {
 func (b *StringBuffer) Save() {
 	b.buffer = uniqueStrings(b.buffer)
 
-	err := FromHandler(b.SaveFile, func(writer io.Writer) error {
-		_, err := writer.Write([]byte(strings.Join(b.buffer, "\n") + "\n"))
-		return err
-	}, Append)
+	err := b.writer.WriteString(strings.Join(b.buffer, "\n") + "\n")
 	if err == nil {
 		b.buffer = []string{}
 	}
