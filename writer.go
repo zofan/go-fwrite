@@ -81,7 +81,7 @@ func (w *Writer) WriteReader(r io.Reader) error {
 	return err
 }
 
-func (w *Writer) WriteChan(ch chan<- []byte) error {
+func (w *Writer) WriteChan(ch chan []byte) error {
 	for v := range ch {
 		_, err := w.Writer().Write(v)
 		if err != nil {
