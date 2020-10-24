@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"github.com/zofan/go-bits"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,6 +19,15 @@ const (
 type Writer struct {
 	fh io.WriteCloser
 	gz io.WriteCloser
+}
+
+func WriteRaw(filePath string, raw string) error {
+	dir := filepath.Dir(filePath)
+	if err := os.MkdirAll(dir, 0777); err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(filePath, []byte(raw), 0664)
 }
 
 func NewWriter(filePath string, options bits.Bits8) (writer *Writer, err error) {
