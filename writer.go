@@ -21,13 +21,13 @@ type Writer struct {
 	gz io.WriteCloser
 }
 
-func WriteRaw(filePath string, raw string) error {
+func WriteRaw(filePath string, raw []byte) error {
 	dir := filepath.Dir(filePath)
 	if err := os.MkdirAll(dir, 0777); err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(filePath, []byte(raw), 0664)
+	return ioutil.WriteFile(filePath, raw, 0664)
 }
 
 func NewWriter(filePath string, options bits.Bits8) (writer *Writer, err error) {
