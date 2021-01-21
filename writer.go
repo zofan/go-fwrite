@@ -2,6 +2,7 @@ package fwrite
 
 import (
 	"compress/gzip"
+	"encoding/json"
 	"github.com/zofan/go-bits"
 	"io"
 	"io/ioutil"
@@ -26,6 +27,22 @@ func WriteRaw(filePath string, raw []byte) error {
 	if err := os.MkdirAll(dir, 0777); err != nil {
 		return err
 	}
+
+	return ioutil.WriteFile(filePath, raw, 0664)
+}
+
+func WriteInterface(filePath string, i interface{}) error {
+	dir := filepath.Dir(filePath)
+	if err := os.MkdirAll(dir, 0777); err != nil {
+		return err
+	}
+
+	raw, err := json.Marshal(i)
+	if err != nil {
+		return err
+	}
+
+	raw = append(raw, []byte("\n")...)
 
 	return ioutil.WriteFile(filePath, raw, 0664)
 }
