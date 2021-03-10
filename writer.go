@@ -42,8 +42,6 @@ func WriteInterface(filePath string, i interface{}) error {
 		return err
 	}
 
-	raw = append(raw, []byte("\n")...)
-
 	return ioutil.WriteFile(filePath, raw, 0664)
 }
 
