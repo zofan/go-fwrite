@@ -2,10 +2,8 @@ package fwrite
 
 import (
 	"compress/gzip"
-	"encoding/json"
 	"github.com/zofan/go-bits"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,29 +18,6 @@ const (
 type Writer struct {
 	fh io.WriteCloser
 	gz io.WriteCloser
-}
-
-func WriteRaw(filePath string, raw []byte) error {
-	dir := filepath.Dir(filePath)
-	if err := os.MkdirAll(dir, 0777); err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(filePath, raw, 0664)
-}
-
-func WriteInterface(filePath string, i interface{}) error {
-	dir := filepath.Dir(filePath)
-	if err := os.MkdirAll(dir, 0777); err != nil {
-		return err
-	}
-
-	raw, err := json.Marshal(i)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(filePath, raw, 0664)
 }
 
 func NewWriter(filePath string, options bits.Bits8) (writer *Writer, err error) {
