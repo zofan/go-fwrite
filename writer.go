@@ -2,6 +2,7 @@ package fwrite
 
 import (
 	"compress/gzip"
+	"encoding/json"
 	"github.com/zofan/go-bits"
 	"io"
 	"os"
@@ -74,6 +75,10 @@ func (w *Writer) WriteBytes(b []byte) error {
 func (w *Writer) WriteString(s string) error {
 	_, err := w.Writer().Write([]byte(s))
 	return err
+}
+
+func (w *Writer) WriteJson(v interface{}) error {
+	return json.NewEncoder(w.Writer()).Encode(v)
 }
 
 func (w *Writer) WriteReader(r io.Reader) error {
